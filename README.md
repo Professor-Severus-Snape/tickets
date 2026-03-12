@@ -1,5 +1,4 @@
-[![Client CI/CD](https://github.com/professor-severus-snape/tickets/actions/workflows/server.yml/badge.svg)](https://github.com/professor-severus-snape/tickets/actions/workflows/client.yml)
-
+[![Client CI/CD](https://github.com/professor-severus-snape/tickets/actions/workflows/client.yml/badge.svg)](https://github.com/professor-severus-snape/tickets/actions/workflows/client.yml) 
 [![Server CI/CD](https://github.com/professor-severus-snape/tickets/actions/workflows/server.yml/badge.svg)](https://github.com/professor-severus-snape/tickets/actions/workflows/server.yml)
 
 # Менеджер тикетов
