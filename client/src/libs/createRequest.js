@@ -1,8 +1,9 @@
 export default async function createRequest(options) {
   const isDev = window.location.hostname === 'localhost';
+
   const baseUrl = isDev
     ? 'http://localhost:7070/?' // локальный сервер
-    : 'https://ahj-http-backend-82lw.onrender.com/?'; // сервер на render.com
+    : 'https://tickets-12s9.onrender.com/?'; // сервер на render.com
 
   const { method, url, body } = options;
 
