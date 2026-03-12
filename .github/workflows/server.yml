@@ -9,9 +9,8 @@ on:
       - main
     paths:
       - "server/**" # запуск только при внесении изменений в папку 'server/'
-    paths-ignore:
-      - "server/**/*.md" # изменения в ридми не вызовут запуск workflow
-      - "server/LICENSE" # изменения в лицензии не вызовут запуск workflow
+      - "!server/**/*.md" # изменения в ридми не вызовут запуск workflow
+      - "!server/LICENSE" # изменения в лицензии не вызовут запуск workflow
   # 2. разрешаем также ручной запуск из вкладки Actions на GitHub
   workflow_dispatch:
 
