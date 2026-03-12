@@ -8,7 +8,8 @@ on:
     branches:
       - main
     paths:
-      - "server/**" # запуск только при внесении изменений в папку 'server/'
+      - "server/**" # запуск при внесении изменений в папку 'server/'
+      - ".github/workflows/server.yml" # запуск при внесении изменений в 'server.yml'
       - "!server/**/*.md" # изменения в ридми не вызовут запуск workflow
       - "!server/LICENSE" # изменения в лицензии не вызовут запуск workflow
   # 2. разрешаем также ручной запуск из вкладки Actions на GitHub
@@ -99,7 +100,12 @@ jobs:
       # 4. проверка запуска сервера (build step)
       # сервер запускается на несколько секунд, чтобы убедиться, что нет ошибок
       - name: Test server start
-        run: timeout 5 npm start
+        run: |
+          node server.js &
+          SERVER_PID=$!
+          sleep 5
+          curl -f http://localhost:7070 || exit 1
+          kill $SERVER_PID
 
       # 5. деплой на Render через Deploy Hook
       # URL Deploy Hook хранится в GitHub Secrets
