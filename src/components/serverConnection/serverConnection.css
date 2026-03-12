@@ -1,4 +1,9 @@
 .server-connection {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
   padding: 50px 10px;
   font-size: 30px;
   text-align: center;
