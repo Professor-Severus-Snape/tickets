@@ -1,3 +1,7 @@
+[![Client CI/CD](https://github.com/professor-severus-snape/tickets/actions/workflows/server.yml/badge.svg)](https://github.com/professor-severus-snape/tickets/actions/workflows/client.yml)
+
+[![Server CI/CD](https://github.com/professor-severus-snape/tickets/actions/workflows/server.yml/badge.svg)](https://github.com/professor-severus-snape/tickets/actions/workflows/server.yml)
+
 # Менеджер тикетов
 
 Простое браузерное приложение для управления задачами и тикетами через HTTP API.
@@ -25,8 +29,8 @@
 
 ## CI/CD
 
-- GitHub Actions - автоматическая проверка и сборка клиентской части (CI)  
-- GitHub Pages - деплой клиентской части приложения (CD)  
+- GitHub Actions - автоматическая проверка и сборка клиентской части (CI)
+- GitHub Pages - деплой клиентской части приложения (CD)
 - Render.com - хостинг серверной части приложения (не автоматический деплой)
 
 ## Архитектура
