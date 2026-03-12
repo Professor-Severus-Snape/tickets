@@ -11,7 +11,6 @@
   "author": "professor-severus-snape",
   "license": "MIT",
   "dependencies": {
-    "body-parser": "2.2.2",
     "cors": "2.8.6",
     "express": "5.2.1",
     "pino": "^10.3.1",

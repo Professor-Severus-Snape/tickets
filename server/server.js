@@ -1,4 +1,3 @@
-import bodyParser from 'body-parser';
 import cors from 'cors';
 import * as crypto from 'crypto';
 import express from 'express';
@@ -12,19 +11,13 @@ const logger = pino(pinoPretty());
 app.use(cors());
 
 // парсинг body на сервере (из строки получаем json):
-app.use(
-  bodyParser.json({
-    type(_request) {
-      return true;
-    },
-  }),
-);
+app.use(express.json());
 
 // установка заголовков ответа:
-app.use((_request, response, next) => {
-  response.setHeader('Content-Type', 'application/json');
-  next();
-});
+// app.use((_request, response, next) => {
+//   response.setHeader('Content-Type', 'application/json');
+//   next();
+// });
 
 let tickets = [
   {
@@ -50,32 +43,41 @@ let tickets = [
   },
 ];
 
-app.use(async(request, response) => {
+app.use((request, response) => {
   const { method, id } = request.query;
+
+  if (!method) {
+    return response.status(204).end();
+  }
+
   switch (method) {
-    case 'checkServer':
+    case 'checkServer': {
       logger.info('Server found');
       response.status(204).end();
       break;
-    case 'allTickets':
-      logger.info('All tickets has been called');
-      response.send(JSON.stringify(tickets)).end();
-      break;
-    case 'ticketById': {
-      const ticket = tickets.find((ticket) => ticket.id === id);
-      if (!ticket) {
-        response
-          .status(404)
-          .send(JSON.stringify({ message: 'Ticket not found' }))
-          .end();
-        break;
-      }
-      response.send(JSON.stringify(ticket)).end();
+    }
+
+    case 'allTickets': {
+      logger.info('All tickets requested');
+      response.json(tickets);
       break;
     }
+
+    case 'ticketById': {
+      const ticket = tickets.find((ticket) => ticket.id === id);
+
+      if (!ticket) {
+        return response.status(404).json({ message: 'Ticket not found' });
+      }
+
+      response.json(ticket);
+      break;
+    }
+
     case 'createTicket': {
       try {
         const createData = request.body;
+
         const newTicket = {
           id: crypto.randomUUID(),
           name: createData.name,
@@ -83,50 +85,55 @@ app.use(async(request, response) => {
           description: createData.description || '',
           created: Date.now(),
         };
+
         tickets.push(newTicket);
-        logger.info(`New ticket created: ${JSON.stringify(newTicket)}`);
-        response.send(JSON.stringify(newTicket)).end();
+
+        logger.info({ ticket: newTicket }, 'Ticket created');
+
+        response.json(newTicket);
       } catch (error) {
-        logger.error(`Error creating new ticket: ${error.message}`);
-        response.status(500).send(JSON.stringify({ error: error.message }));
+        logger.error(error);
+        response.status(500).json({ error: error.message });
       }
+
       break;
     }
+
     case 'deleteById': {
       const ticket = tickets.find((ticket) => ticket.id === id);
-      if (ticket) {
-        tickets = tickets.filter((ticket) => ticket.id !== id);
-        logger.info(`Ticket deleted: ${JSON.stringify(ticket)}`);
-        response.status(204).end();
-      } else {
-        logger.warn(`Ticket not found: ${id}`);
-        response
-          .status(404)
-          .send(JSON.stringify({ message: 'Ticket not found' }))
-          .end();
+
+      if (!ticket) {
+        return response.status(404).json({ message: 'Ticket not found' });
       }
+
+      tickets = tickets.filter((ticket) => ticket.id !== id);
+
+      logger.info({ ticket }, 'Ticket deleted');
+
+      response.status(204).end();
+
       break;
     }
+
     case 'updateById': {
       const ticket = tickets.find((ticket) => ticket.id === id);
-      const updateData = request.body;
-      if (ticket) {
-        Object.assign(ticket, updateData);
-        logger.info(`Ticket updated: ${JSON.stringify(ticket)}`);
-        response.send(JSON.stringify(tickets));
-      } else {
-        logger.warn(`Ticket not found: ${id}`);
-        response
-          .status(404)
-          .send(JSON.stringify({ message: 'Ticket not found' }))
-          .end();
+
+      if (!ticket) {
+        return response.status(404).json({ message: 'Ticket not found' });
       }
+
+      Object.assign(ticket, request.body);
+
+      logger.info({ ticket }, 'Ticket updated');
+
+      response.json(ticket);
       break;
     }
-    default:
-      logger.warn(`Unknown method: ${method}`);
+
+    default: {
+      logger.warn({ method, url: request.url }, 'Unknown API method');
       response.status(404).end();
-      break;
+    }
   }
 });
 
@@ -134,9 +141,7 @@ const port = process.env.PORT || 7070;
 
 const bootstrap = async() => {
   try {
-    app.listen(port, () =>
-      logger.info(`Server has been started on http://localhost:${port}`),
-    );
+    app.listen(port, () => logger.info(`Server has been started on http://localhost:${port}`));
   } catch (error) {
     console.error(error);
   }
